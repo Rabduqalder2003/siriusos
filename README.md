@@ -1,2 +1,0 @@
-# siriusos
-unblocked game os
