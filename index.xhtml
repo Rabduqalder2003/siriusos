@@ -122,24 +122,10 @@
 
         .ai-bubble { background: rgba(255,255,255,0.1); color: white; border-bottom-left-radius: 4px; }
         .user-bubble { background: var(--accent-color); color: white; border-bottom-right-radius: 4px; align-self: flex-end; }
-        
-        .bot-log {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 10px;
-            background: #000;
-            color: #22c55e;
-            padding: 10px;
-            height: 100px;
-            overflow-y: auto;
-            border-radius: 8px;
-            margin-top: 10px;
-            border: 1px solid rgba(34, 197, 94, 0.2);
-        }
     </style>
 </head>
 <body>
 
-    <!-- Audio Element -->
     <audio id="startup-sound" preload="auto">
         <source src="startup.mp3" type="audio/mpeg" />
     </audio>
@@ -190,13 +176,6 @@
                 <span class="text-white text-xs font-medium drop-shadow-lg text-center">Proxy</span>
             </button>
 
-            <button type="button" onclick="openApp('blooket-app')" class="app-icon group flex flex-col items-center gap-2 w-24">
-                <div class="w-14 h-14 bg-orange-600 rounded-2xl flex items-center justify-center shadow-xl group-hover:bg-orange-500 transition-all">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/></svg>
-                </div>
-                <span class="text-white text-xs font-medium drop-shadow-lg text-center">Blooket Bot</span>
-            </button>
-
             <button type="button" onclick="openApp('weather-app')" class="app-icon group flex flex-col items-center gap-2 w-24">
                 <div class="w-14 h-14 bg-sky-500 rounded-2xl flex items-center justify-center shadow-xl group-hover:bg-sky-400 transition-all">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" /></svg>
@@ -226,7 +205,7 @@
             </button>
         </div>
 
-        <!-- Windows UI -->
+        <!-- App Windows -->
         <div id="games-app" class="window top-10 left-32 w-[80vw] h-[75vh] bg-slate-900 rounded-2xl overflow-hidden hidden-ui flex flex-col shadow-2xl border border-white/10">
             <div class="window-header h-12 bg-slate-800 flex items-center justify-between px-5">
                 <div class="flex items-center gap-2">
@@ -258,42 +237,28 @@
                         </div>
                     </div>
                 </div>
-                <iframe id="game-frame" src="about:blank" sandbox="allow-scripts allow-forms allow-same-origin allow-popups" class="w-full h-full border-none hidden"></iframe>
+                <iframe id="game-frame" src="about:blank" sandbox="allow-scripts allow-forms allow-same-origin allow-popups" class="w-full h-full border-none hidden" allow="autoplay; fullscreen; keyboard; encrypted-media"></iframe>
             </div>
         </div>
 
-        <div id="blooket-app" class="window top-12 left-40 w-[400px] h-[600px] bg-slate-900 rounded-2xl overflow-hidden hidden-ui flex flex-col shadow-2xl">
+        <div id="weather-app" class="window top-24 left-64 w-80 h-[480px] bg-slate-900 rounded-2xl overflow-hidden hidden-ui flex flex-col shadow-2xl">
             <div class="window-header h-12 bg-slate-800 flex items-center justify-between px-5">
-                <span class="text-white text-sm font-semibold">Blooket Bot Utility</span>
-                <button type="button" onclick="closeApp('blooket-app')" class="w-3.5 h-3.5 rounded-full bg-red-500"></button>
+                <span class="text-white text-sm font-semibold">Weather</span>
+                <button type="button" onclick="closeApp('weather-app')" class="w-3.5 h-3.5 rounded-full bg-red-500"></button>
             </div>
-            <div class="flex-1 p-6 space-y-4 bg-slate-950 overflow-y-auto">
-                <div id="bot-status-panel" class="p-4 bg-orange-600/10 border border-orange-500/20 rounded-xl">
-                    <p class="text-orange-400 text-[10px] font-bold uppercase mb-1">Bot Status</p>
-                    <p id="bot-status-text" class="text-white text-sm">Engine Ready. Awaiting Game ID...</p>
-                    <div class="w-full bg-slate-800 h-1 rounded-full mt-3 overflow-hidden">
-                        <div id="bot-progress" class="bg-orange-500 h-full w-0 transition-all"></div>
+            <div class="bg-slate-800/50 p-3 border-b border-white/5 flex gap-2">
+                <input type="text" id="weather-search" placeholder="City..." class="flex-1 bg-slate-950 border border-white/10 rounded-lg px-3 py-1 text-white text-xs outline-none" />
+                <button onclick="refreshWeather()" class="text-[10px] text-white/60 hover:text-white uppercase font-bold">Update</button>
+            </div>
+            <div class="flex-1 p-6 flex flex-col items-center justify-center text-center space-y-4 bg-gradient-to-b from-sky-900/50 to-slate-950">
+                <div id="weather-loading" class="loader hidden-ui"></div>
+                <div id="weather-content" class="text-white w-full">
+                    <p id="weather-city" class="text-xs uppercase opacity-60">Detecting...</p>
+                    <div class="flex items-start justify-center gap-1">
+                        <p id="weather-temp" class="text-6xl font-light">--</p>
+                        <button onclick="toggleWeatherUnit()" id="weather-unit" class="text-xl mt-2 theme-accent-bg text-white w-8 h-8 rounded-full shadow-lg">°F</button>
                     </div>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="space-y-2">
-                        <label class="text-slate-500 text-[10px] font-bold uppercase ml-1">Game Pin</label>
-                        <input type="text" id="blook-id" placeholder="000000" class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white text-lg font-mono outline-none focus:border-orange-500 transition-all" />
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-slate-500 text-[10px] font-bold uppercase ml-1">Bot Count</label>
-                        <input type="number" id="blook-count" value="10" min="1" max="50" class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white text-lg font-mono outline-none focus:border-orange-500 transition-all" />
-                    </div>
-                </div>
-
-                <div class="pt-4 space-y-3">
-                    <button id="flood-btn" onclick="startBlookFlood()" class="w-full h-12 bg-orange-600 text-white font-bold rounded-xl hover:bg-orange-500 active:scale-95 transition-all">Flood Session</button>
-                    <button onclick="startAutoAnswer()" class="w-full h-12 bg-slate-800 text-white font-bold rounded-xl hover:bg-slate-700 active:scale-95 transition-all">Auto Answer</button>
-                </div>
-
-                <div id="bot-log" class="bot-log">
-                    <div>[SYSTEM] Infiltration Engine v2.1 initialized...</div>
+                    <p id="weather-desc" class="italic mt-4">Updating forecast...</p>
                 </div>
             </div>
         </div>
@@ -309,11 +274,26 @@
                     <div class="grid grid-cols-2 gap-2">
                         <button onclick="setTheme('linear-gradient(135deg, #1e293b 0%, #0f172a 100%)', '#3b82f6')" class="h-10 bg-slate-800 text-[10px] text-white rounded-lg hover:bg-slate-700">Dark Slate</button>
                         <button onclick="setTheme('linear-gradient(135deg, #4338ca 0%, #1e1b4b 100%)', '#6366f1')" class="h-10 bg-indigo-900 text-[10px] text-white rounded-lg hover:bg-indigo-800">Midnight</button>
+                        <button onclick="setTheme('linear-gradient(135deg, #7c2d12 0%, #431407 100%)', '#f97316')" class="h-10 bg-orange-950 text-[10px] text-white rounded-lg hover:bg-orange-900">Sunset</button>
+                        <button onclick="setTheme('linear-gradient(135deg, #064e3b 0%, #022c22 100%)', '#10b981')" class="h-10 bg-emerald-950 text-[10px] text-white rounded-lg hover:bg-emerald-900">Forest</button>
                     </div>
                 </div>
-                <button onclick="signOut()" class="w-full h-12 bg-red-950/30 border border-red-900/50 text-red-400 font-bold rounded-xl hover:bg-red-900/40 transition-all active:scale-95">Sign Out</button>
+                <div>
+                    <h3 class="text-white text-xs font-bold uppercase opacity-50 mb-3">Session</h3>
+                    <button onclick="signOut()" class="w-full h-12 bg-red-950/30 border border-red-900/50 text-red-400 font-bold rounded-xl hover:bg-red-900/40 transition-all active:scale-95">Sign Out</button>
+                </div>
+                <div class="pt-6 border-t border-white/5 flex justify-between items-center text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+                    <span>SiriusOS Enterprise</span>
+                    <span>v2.1.0-stable</span>
+                </div>
             </div>
         </div>
+
+        <div id="cloak-app" class="window top-20 left-48 w-96 bg-slate-900 rounded-2xl overflow-hidden hidden-ui flex flex-col shadow-2xl"><div class="window-header h-12 bg-slate-800 flex items-center justify-between px-5"><span class="text-white text-sm font-semibold">Tab Cloak</span><button type="button" onclick="closeApp('cloak-app')" class="w-3.5 h-3.5 rounded-full bg-red-500"></button></div><div class="p-6 space-y-4"><input type="text" id="cloak-name" placeholder="Tab Name" class="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm outline-none" /><input type="text" id="cloak-icon" placeholder="Favicon URL" class="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm outline-none" /><button onclick="cloak()" class="w-full theme-accent-bg text-white font-medium py-3 rounded-xl">Launch Stealth</button></div></div>
+        <div id="forms-app" class="window top-12 left-32 w-[600px] h-[700px] bg-slate-900 rounded-2xl overflow-hidden hidden-ui flex flex-col shadow-2xl"><div class="window-header h-12 bg-slate-800 flex items-center justify-between px-5"><span class="text-white text-sm font-semibold">Sirius Forms</span><button type="button" onclick="closeApp('forms-app')" class="w-3.5 h-3.5 rounded-full bg-red-500"></button></div><iframe src="https://docs.google.com/forms/d/e/1FAIpQLSe6Hh229T_1Z2uPz8S6h7j5C0bE9M-P-lP_Xp_T_Q/viewform?embedded=true" class="w-full h-full border-none"></iframe></div>
+        <div id="ai-app" class="window top-10 left-32 w-[450px] h-[600px] bg-slate-900 rounded-2xl overflow-hidden hidden-ui flex flex-col shadow-2xl"><div class="window-header h-12 bg-slate-800 flex items-center justify-between px-5"><span class="text-white text-sm font-semibold">Sirius AI</span><button type="button" onclick="closeApp('ai-app')" class="w-3.5 h-3.5 rounded-full bg-red-500"></button></div><div id="ai-messages" class="flex-1 p-4 overflow-y-auto flex flex-col gap-2 bg-slate-950/50"></div><div class="p-4 bg-slate-800 border-t border-white/5 flex gap-2"><input type="text" id="ai-input" placeholder="Ask anything..." class="flex-1 bg-slate-950 border border-white/10 rounded-xl px-4 py-2 text-white text-sm outline-none" /><button onclick="sendAIQuery()" class="theme-accent-bg text-white px-4 py-2 rounded-xl">Send</button></div></div>
+        <div id="notes-app" class="window top-16 left-40 w-96 h-[500px] bg-slate-900 rounded-2xl overflow-hidden hidden-ui flex flex-col shadow-2xl"><div class="window-header h-12 bg-slate-800 flex items-center justify-between px-5"><span class="text-white text-sm font-semibold">Notes</span><button type="button" onclick="closeApp('notes-app')" class="w-3.5 h-3.5 rounded-full bg-red-500"></button></div><textarea id="notes-textarea" class="flex-1 p-6 bg-slate-950 text-slate-300 text-sm outline-none resize-none" placeholder="Draft something..."></textarea></div>
+        <div id="paint-app" class="window top-12 left-28 w-[700px] h-[500px] bg-slate-900 rounded-2xl overflow-hidden hidden-ui flex flex-col shadow-2xl"><div class="window-header h-12 bg-slate-800 flex items-center justify-between px-5"><span class="text-white text-sm font-semibold">Paint</span><button type="button" onclick="closeApp('paint-app')" class="w-3.5 h-3.5 rounded-full bg-red-500"></button></div><div class="h-10 bg-slate-800/50 flex items-center px-4 gap-4 border-b border-white/5"><input type="color" id="paint-color" value="#3b82f6" /><input type="range" id="paint-size" min="1" max="50" value="5" /><button onclick="clearCanvas()" class="text-xs text-white opacity-60">Clear</button></div><div class="flex-1 bg-white relative"><canvas id="paint-canvas"></canvas></div></div>
 
         <!-- Taskbar -->
         <div class="taskbar fixed bottom-0 left-0 right-0 h-16 flex items-center px-6 justify-between z-50">
@@ -321,13 +301,18 @@
                 <div onclick="toggleStartMenu()" class="w-10 h-10 theme-accent-bg rounded-lg flex items-center justify-center text-white font-bold cursor-pointer hover:scale-105 active:scale-95 shadow-lg transition-transform">S</div>
                 <div id="task-list" class="flex gap-2"></div>
             </div>
+            
             <div class="flex items-center gap-6">
+                <!-- Battery Indicator -->
                 <div id="battery-status" class="flex items-center gap-2 text-white/60">
                     <span id="battery-percent" class="text-[10px] font-bold">100%</span>
                     <div class="w-6 h-3.5 border border-white/30 rounded-sm relative p-0.5">
                         <div id="battery-bar" class="h-full bg-green-500 rounded-sm w-full"></div>
+                        <div class="absolute -right-1 top-1 w-0.5 h-1 bg-white/30 rounded-r-sm"></div>
                     </div>
                 </div>
+
+                <!-- Clock with Seconds -->
                 <div id="clock" class="text-white font-light text-right leading-tight">
                     <div id="clock-date" class="text-[10px] uppercase opacity-60">Monday, Jan 1</div>
                     <div id="clock-time" class="text-lg">12:00:00 PM</div>
@@ -345,13 +330,19 @@
     //<![CDATA[
         const APPS = {
             'cloak-app': { name: 'Tab Cloak', color: 'bg-slate-800', svg: '<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>' },
+            'forms-app': { name: 'Forms', color: 'bg-emerald-600', svg: '<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>' },
             'ai-app': { name: 'Sirius AI', color: 'bg-purple-600', svg: '<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>' },
             'games-app': { name: 'Proxy', color: 'bg-indigo-600', svg: '<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>' },
-            'blooket-app': { name: 'Blooket Bot', color: 'bg-orange-600', svg: '<svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/></svg>' },
+            'weather-app': { name: 'Weather', color: 'bg-sky-500', svg: '<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>' },
+            'notes-app': { name: 'Notes', color: 'bg-amber-500', svg: '<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>' },
+            'paint-app': { name: 'Paint', color: 'bg-rose-500', svg: '<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>' },
             'settings-app': { name: 'Settings', color: 'bg-slate-700', svg: '<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066-1.543.94-3.31-.826-2.37-2.37-1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3" stroke-width="2"/></svg>' }
         };
 
+        let weatherUnit = 'F';
+
         window.onload = () => {
+            initNotes();
             updateClock();
             updateBattery();
             setInterval(updateClock, 1000);
@@ -359,13 +350,7 @@
         };
 
         function login() {
-            // Updated login: Trigger sound after 1 second
-            setTimeout(() => {
-                const sound = document.getElementById('startup-sound');
-                sound.play().catch(e => console.log("Audio play blocked by browser. User interaction required."));
-            }, 1000);
-
-            // Immediate transition
+            document.getElementById('startup-sound').play().catch(()=>{});
             document.getElementById('login-screen').style.opacity = '0';
             setTimeout(() => {
                 document.getElementById('login-screen').classList.add('hidden-ui');
@@ -377,6 +362,7 @@
             document.getElementById('login-screen').classList.remove('hidden-ui');
             document.getElementById('login-screen').style.opacity = '1';
             document.getElementById('desktop').classList.add('hidden-ui');
+            document.getElementById('password-input').value = '';
             document.querySelectorAll('.window').forEach(w => w.classList.add('hidden-ui'));
             updateTaskList();
         }
@@ -384,20 +370,31 @@
         function openApp(id) {
             const app = document.getElementById(id);
             app.classList.remove('hidden-ui');
+            app.classList.add('animate-window');
             app.setAttribute('data-opened', 'true');
             updateTaskList();
             focusApp(id);
+            if (id === 'paint-app') initPaint();
+            if (id === 'weather-app') refreshWeather();
+            setTimeout(() => app.classList.remove('animate-window'), 500);
         }
 
         function closeApp(id) {
             const app = document.getElementById(id);
-            app.classList.add('hidden-ui'); 
-            app.removeAttribute('data-opened'); 
-            updateTaskList(); 
+            app.style.transform = "scale(0.9) translateY(20px)";
+            app.style.opacity = "0";
+            setTimeout(() => {
+                app.classList.add('hidden-ui'); 
+                app.removeAttribute('data-opened'); 
+                app.style.transform = ""; app.style.opacity = "";
+                updateTaskList(); 
+            }, 200);
         }
 
         function minimizeApp(id) { 
-            document.getElementById(id).classList.add('hidden-ui');
+            const app = document.getElementById(id);
+            app.style.transform = "scale(0.8) translateY(100px)"; app.style.opacity = "0";
+            setTimeout(() => { app.classList.add('hidden-ui'); app.style.transform = ""; app.style.opacity = ""; }, 200);
         }
 
         function toggleApp(id) { 
@@ -411,15 +408,16 @@
         }
 
         function maximizeApp(id) {
-            document.getElementById(id).classList.toggle('maximized');
+            const app = document.getElementById(id);
+            app.classList.toggle('maximized');
+            if (id === 'paint-app') resizeCanvas();
         }
 
         function updateTaskList() {
             const list = document.getElementById('task-list');
             list.innerHTML = '';
             Object.keys(APPS).forEach(id => {
-                const appEl = document.getElementById(id);
-                if (appEl && appEl.getAttribute('data-opened') === 'true') {
+                if (document.getElementById(id).getAttribute('data-opened') === 'true') {
                     const btn = document.createElement('div');
                     btn.className = `w-10 h-10 ${APPS[id].color} rounded-lg flex items-center justify-center cursor-pointer shadow-lg hover:scale-110 active:scale-90 transition-transform`;
                     btn.onclick = () => toggleApp(id);
@@ -445,55 +443,19 @@
             }
         }
 
-        // Blooket Bot Logic
-        let botInterval = null;
-        function botLog(msg) {
-            const log = document.getElementById('bot-log');
-            if(!log) return;
-            const div = document.createElement('div');
-            div.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
-            log.appendChild(div);
-            log.scrollTop = log.scrollHeight;
-        }
-
-        function startBlookFlood() {
-            const pin = document.getElementById('blook-id').value;
-            const count = parseInt(document.getElementById('blook-count').value) || 10;
-            const floodBtn = document.getElementById('flood-btn');
-            if (!pin) { botLog("ERROR: Invalid PIN."); return; }
-            if (botInterval) {
-                clearInterval(botInterval); botInterval = null;
-                floodBtn.textContent = "Flood Session";
-                botLog("Bot Flood Terminated.");
-                return;
-            }
-            botLog(`Connecting to Blooket ID: ${pin}...`);
-            floodBtn.textContent = "Stop Flooding";
-            let currentBots = 0;
-            botInterval = setInterval(() => {
-                if (currentBots >= count) { botLog(`SUCCESS: ${count} bots linked.`); clearInterval(botInterval); return; }
-                currentBots++;
-                botLog(`[SOCKET] Handshake bot_${Math.floor(Math.random()*999)} successful`);
-                document.getElementById('bot-progress').style.width = `${(currentBots/count)*100}%`;
-            }, 300);
-        }
-
-        function startAutoAnswer() {
-            botLog("Auto-Answer engaged. Scanning Question buffer...");
-            setTimeout(() => botLog("[ENGINE] Answer injected successfully."), 1500);
-        }
-
         function launchGamesStealth() {
-            let url = document.getElementById('custom-proxy-url').value;
-            if(!url) return;
+            let url = document.getElementById('custom-proxy-url').value.trim();
+            if (!url) return;
+            if (!url.startsWith('http')) url = 'https://' + url;
             document.getElementById('game-frame').classList.remove('hidden');
-            document.getElementById('game-frame').src = url.startsWith('http') ? url : 'https://' + url;
+            document.getElementById('game-frame').src = url;
             document.getElementById('game-overlay').classList.add('hidden');
             document.getElementById('proxy-back-btn').classList.remove('hidden-ui');
         }
 
         function resetProxy() {
             document.getElementById('game-frame').classList.add('hidden');
+            document.getElementById('game-frame').src = 'about:blank';
             document.getElementById('game-overlay').classList.remove('hidden');
             document.getElementById('proxy-back-btn').classList.add('hidden-ui');
         }
@@ -512,6 +474,9 @@
                 const level = Math.round(battery.level * 100);
                 percentText.textContent = `${level}%`;
                 bar.style.width = `${level}%`;
+                if (level < 20) bar.style.backgroundColor = '#ef4444';
+                else if (level < 50) bar.style.backgroundColor = '#f59e0b';
+                else bar.style.backgroundColor = '#22c55e';
             } catch(e) {
                 percentText.textContent = "100%";
                 bar.style.width = "100%";
@@ -523,13 +488,36 @@
             document.getElementById('desktop-bg').style.background = bg;
         }
 
+        function toggleWeatherUnit() {
+            weatherUnit = weatherUnit === 'F' ? 'C' : 'F';
+            document.getElementById('weather-unit').textContent = `°${weatherUnit}`;
+            refreshWeather();
+        }
+
+        function refreshWeather() {
+            const city = document.getElementById('weather-search').value || "Current Location";
+            document.getElementById('weather-loading').classList.remove('hidden-ui');
+            document.getElementById('weather-content').classList.add('hidden');
+            setTimeout(() => {
+                document.getElementById('weather-loading').classList.add('hidden-ui');
+                document.getElementById('weather-content').classList.remove('hidden');
+                document.getElementById('weather-city').textContent = city;
+                const baseTemp = 72;
+                const displayTemp = weatherUnit === 'F' ? baseTemp : Math.round((baseTemp - 32) * 5/9);
+                document.getElementById('weather-temp').textContent = displayTemp;
+                document.getElementById('weather-desc').textContent = "Atmospheric conditions nominal";
+            }, 800);
+        }
+
         let activeWin = null, offsetX = 0, offsetY = 0;
         document.addEventListener('mousedown', (e) => {
             if (e.target.classList.contains('window-header')) {
                 activeWin = e.target.parentNode;
+                if (activeWin.classList.contains('maximized')) return;
                 offsetX = activeWin.offsetLeft - e.clientX;
                 offsetY = activeWin.offsetTop - e.clientY;
                 focusApp(activeWin.id);
+                activeWin.style.transition = 'none';
             }
         });
         document.addEventListener('mousemove', (e) => {
@@ -538,7 +526,70 @@
                 activeWin.style.top = (e.clientY + offsetY) + 'px';
             }
         });
-        document.addEventListener('mouseup', () => { activeWin = null; });
+        document.addEventListener('mouseup', () => { if(activeWin) activeWin.style.transition = ''; activeWin = null; });
+
+        async function sendAIQuery() {
+            const input = document.getElementById('ai-input');
+            const msg = input.value.trim(); if (!msg) return;
+            const container = document.getElementById('ai-messages');
+            container.innerHTML += `<div class="chat-bubble user-bubble">${msg}</div>`;
+            input.value = '';
+            container.scrollTop = container.scrollHeight;
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: msg }] }] })
+                });
+                const data = await res.json();
+                const aiMsg = data.candidates?.[0]?.content?.parts?.[0]?.text || "Communication relay failure.";
+                container.innerHTML += `<div class="chat-bubble ai-bubble">${aiMsg}</div>`;
+                container.scrollTop = container.scrollHeight;
+            } catch(e) { container.innerHTML += `<div class="chat-bubble ai-bubble">Signal lost.</div>`; }
+        }
+
+        function initPaint() {
+            const c = document.getElementById('paint-canvas');
+            const ctx = c.getContext('2d');
+            resizeCanvas();
+            let painting = false;
+            c.onmousedown = (e) => { painting = true; draw(e); };
+            c.onmouseup = () => { painting = false; ctx.beginPath(); };
+            c.onmousemove = draw;
+            function draw(e) {
+                if (!painting) return;
+                const rect = c.getBoundingClientRect();
+                ctx.lineWidth = document.getElementById('paint-size').value;
+                ctx.lineCap = 'round';
+                ctx.strokeStyle = document.getElementById('paint-color').value;
+                ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+            }
+        }
+        function resizeCanvas() {
+            const c = document.getElementById('paint-canvas');
+            if (c) { c.width = c.parentElement.clientWidth; c.height = c.parentElement.clientHeight; }
+        }
+        function clearCanvas() { const c = document.getElementById('paint-canvas'); if(c) c.getContext('2d').clearRect(0,0,c.width,c.height); }
+
+        function initNotes() {
+            const ta = document.getElementById('notes-textarea');
+            ta.value = localStorage.getItem('sirius-notes') || '';
+            ta.oninput = () => localStorage.setItem('sirius-notes', ta.value);
+        }
+
+        function cloak() {
+            const n = document.getElementById('cloak-name').value || 'System Drive';
+            const i = document.getElementById('cloak-icon').value || 'https://www.google.com/favicon.ico';
+            const w = window.open('about:blank', '_blank');
+            if(!w) return;
+            w.document.title = n;
+            const l = w.document.createElement('link'); l.rel = 'icon'; l.href = i; w.document.head.appendChild(l);
+            const fr = w.document.createElement('iframe'); fr.src = window.location.href;
+            fr.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;border:none;";
+            w.document.body.appendChild(fr);
+        }
     //]]>
     </script>
 </body>
